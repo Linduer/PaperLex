@@ -1,0 +1,16 @@
+{
+  "name": "PaperLex · 论文生词本",
+  "short_name": "PaperLex",
+  "description": "读论文背单词：PDF 抽词、国际音标、学习+复习+SRS",
+  "lang": "zh-CN",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f7fb",
+  "theme_color": "#2b6cb0",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

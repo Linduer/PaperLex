@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+
+# 本地数据与生成物
+data/*.db
+cache/
+output/
+*.pdf
+
+# 词典原始资源（体积大，需自行下载；wordlists 随仓库分发）
+resources/ecdict.csv
+resources/lemma.en.txt
+resources/*.zip
+
+# 系统
+.DS_Store
+Thumbs.db

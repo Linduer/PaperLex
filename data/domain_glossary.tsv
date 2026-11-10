@@ -1,0 +1,97 @@
+# 领域词典：优先级高于 ECDICT，key 与术语库一致（不区分大小写）。
+# 格式：key<TAB>释义（TAB 分隔，# 开头为注释）。随时补行，build 时自动生效。
+# ---- 计算神经科学 / 系统神经科学 ----
+connectome	连接组：全脑神经连接的完整图谱	kəˈnektəʊm
+connectome-based	基于连接组的
+anticorrelations	反相关：脑区活动呈负相关（静息态常见）	ˌæntikɒrəˈleɪʃənz
+cross-species	跨物种的
+resting-state	静息态：无任务时的自发脑活动状态
+whole-brain	全脑的
+neuromorphic	神经形态的：仿大脑工作方式的类脑芯片/计算	ˌnjʊərəʊˈmɔːfɪk
+tractography	纤维束成像：由弥散 MRI 重建白质纤维通路	trækˈtɒɡrəfi
+timepoint	时间点
+paired-sample	配对样本的
+time-shifted	时移的：信号错开时间延迟后再做相关
+data-generating	生成数据的
+kuramoto	藏本（Kuramoto）振子：描述耦合相位振子同步的经典模型	ˌkʊərəˈməʊtəʊ
+hopf	Hopf 振子：产生持续振荡的动力学单元（全脑建模常用节点）	hɒpf
+GEC	生成式有效连接（generative effective connectivity）：优化结构连接权重得到的、能重现功能连接的耦合矩阵
+PVALB	小白蛋白基因（parvalbumin 的基因符号，抑制性神经元标记）
+group-average	组平均的（跨被试取平均）
+groupwise	组水平的；逐组的	ˈɡruːpwaɪz
+input-modulating	输入调制型（连接改变目标节点的输入）
+output-modulating	输出调制型（连接改变源节点的输出）
+myeloarchitecture	髓鞘构筑：脑区髓鞘化的层状模式	ˌmaɪələʊˈɑːkɪtektʃə
+cytoarchitecture	细胞构筑：皮层细胞的分层结构
+negative-valued	取负值的
+somatomotor	躯体运动的（感觉运动皮层）	ˌsəʊmətəʊˈməʊtə
+split-half	折半的（split-half reliability 折半信度：数据对半分求相关）
+stereo-seq	Stereo-seq：单细胞空间转录组测序技术	ˈsteriəʊ siːk
+subject-specific	被试特异的（个体化的）
+self-self	自我-自我（同一被试数据间的相似度，个体可辨识性检验）
+real-sim	真实-模拟（真实 FC 与模拟 FC 的相关对比）	ˈrɪəl sɪm
+PV-SST	小白蛋白-生长抑素（两类抑制性神经元标记的对比轴）
+wilson-cowan	Wilson-Cowan 模型：经典的兴奋-抑制神经群动力学模型	ˈwɪlsən ˈkaʊən
+ignition	点火：全局工作空间理论中意识信息全局涌现的过程
+generative	生成式的
+connectivity	连接（度）：脑区之间的功能/结构连接强度
+oscillator	振子（振荡器）
+# ---- 本篇缩写（论文未展开或 ECDICT 给了别的领域释义）----
+FC	功能连接（functional connectivity）
+SC	结构连接（structural connectivity）
+DWI	弥散加权成像（diffusion-weighted imaging）
+BCT	脑连接工具箱（Brain Connectivity Toolbox）
+SST	生长抑素（somatostatin，抑制性神经元亚类标记）
+PV	小白蛋白（parvalbumin，抑制性神经元亚类标记）
+MRI	核磁共振成像（magnetic resonance imaging）
+KOP	Kuramoto 序参量：衡量振子群同步程度（文中用 std(KOP)）
+IDI	内在驱动点火（intrinsic-driven ignition，全局工作空间的意识指标）
+BOLD	血氧水平依赖（blood oxygen level dependent，fMRI 信号来源）
+GSR	全局信号回归（global signal regression，fMRI 预处理步骤）
+GC	生成连接（generative connectivity）
+# ---- 短语 ----
+generative connectivity	生成连接：模型重构真实脑活动模式的能力（本篇核心指标）
+generative connections	生成连接（复数表述）
+empirical functional connectivity	实证功能连接（真实测得的 FC）
+functional connectivity	功能连接
+structural connectivity	结构连接
+structural connectome	结构连接组
+brain connectivity	脑连接
+cognitive matching	认知匹配
+brain dynamics	脑动力学
+brain network	脑网络
+brain regions	脑区
+cell type	细胞类型
+competitive interactions	竞争性相互作用
+cooperative interactions	合作性相互作用
+cooperative competitive	合作-竞争（耦合关系）
+cooperative-competitive	合作-竞争耦合的（两种相互作用并存）
+cooperative connections	合作性连接
+connectivity matrices	连接矩阵（复数）
+differential identifiability	差异可辨识性
+individual specific	个体特异的（individual-specific）
+integrated information decomposition	整合信息分解
+local global hierarchy	局部-全局层级
+local-global	局部-全局的（局部到全局的层级组织）
+global hierarchy	全局层级
+cytoarchitecture myelination	细胞构筑与髓鞘化（脑区解剖特征谱）
+axis receptor	轴-受体（脑区特征谱）
+mammalian brain	哺乳动物脑
+median values	中位数值
+negative connections	负向连接（功能连接为负）
+negative values	负值
+mutual information	互信息
+reservoir computing	储备池计算
+subjects simulated	模拟被试（与真实被试对照）
+simulated subjects	模拟被试（与真实被试对照）
+simulated empirical	模拟与实证（对照）
+truth generative	真值与生成连接（对照分析）
+synergistic information	协同信息
+synergistic	协同的	ˌsɪnəˈdʒɪstɪk
+tract tracing	神经纤维束示踪
+consistently	一贯地；始终如一地	kənˈsɪstəntli
+explicitly	明确地；直白地	ɪkˈsplɪsɪtli
+overfitting	过拟合	ˌəʊvəˈfɪtɪŋ
+long-range	长程的；大范围的	ˌlɒŋ ˈreɪndʒ
+cytoarchitecture myelination	细胞构筑与髓鞘化（脑区解剖特征谱）	ˌsɪtəʊˌɑːkɪˈtektʃə ˌmaɪəˈleɪʃən
+interquartile range	四分位数间距	ˌɪntəˈkwɔːtaɪl reɪndʒ

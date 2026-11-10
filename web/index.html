@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PaperLex · 论文生词本</title>
+<meta name="theme-color" content="#2b6cb0">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<style>
+  :root {
+    --bg: #f4f7fb; --card: #ffffff; --ink: #1f2933; --sub: #61708a;
+    --line: #d7e0ec; --brand: #2b6cb0; --ok-bg: #d8f5e0; --ok-fg: #14622b;
+    --no-bg: #fde2e1; --no-fg: #8c1d18; --chip: #e8eef7;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  }
+  header { max-width: 720px; margin: 0 auto; padding: 14px 14px 0; }
+  .top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  h1 { font-size: 20px; margin: 0; letter-spacing: 1px; }
+  .tab {
+    border: 1px solid var(--line); background: #fff; color: var(--sub);
+    padding: 6px 16px; border-radius: 18px; cursor: pointer; font-size: 14px;
+  }
+  .tab.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .spacer { flex: 1; }
+  .ghost {
+    border: 1px solid var(--line); background: #fff; color: var(--sub);
+    padding: 6px 12px; border-radius: 18px; cursor: pointer; font-size: 13px;
+  }
+  .ghost.on { background: #fff7e6; border-color: #e6b800; color: #8a6d00; }
+  .bar { height: 6px; background: #e2e9f2; border-radius: 3px; margin: 12px 0 6px; overflow: hidden; }
+  .bar > div { height: 100%; background: var(--brand); width: 0; transition: width .25s; }
+  .meta-line { display: flex; gap: 16px; font-size: 12.5px; color: var(--sub); flex-wrap: wrap; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 4px; }
+  .chip {
+    border: none; background: var(--chip); color: #4a5a75; font-size: 12.5px;
+    padding: 5px 12px; border-radius: 14px; cursor: pointer;
+  }
+  .chip.active { background: #10263f; color: #fff; }
+  main { max-width: 720px; margin: 0 auto; padding: 10px 14px 40px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 26px 22px 22px; text-align: center; box-shadow: 0 1px 4px rgba(16,38,63,.05);
+  }
+  .kind {
+    display: inline-block; font-size: 12px; color: #667; letter-spacing: 1px;
+    background: var(--chip); border-radius: 10px; padding: 2px 10px; margin-bottom: 12px;
+  }
+  .term { font-size: 38px; font-weight: 700; color: #10263f; word-break: break-word; }
+  .phon-line { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 6px 0 4px; }
+  .phon { font-size: 16px; color: #5a6b7f; min-height: 20px; }
+  .audio {
+    border: none; background: #eef3fa; border-radius: 50%; width: 34px; height: 34px;
+    font-size: 15px; cursor: pointer;
+  }
+  .audio:hover { background: #e0eaf7; }
+  .hint { font-size: 13px; color: #8a97a8; margin: 6px 0 10px; }
+  .opts { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .opt {
+    font-size: 16.5px; font-family: inherit; text-align: left; cursor: pointer;
+    background: #fff; color: var(--ink); border: 1px solid #cfdae8;
+    border-radius: 10px; padding: 12px 14px; width: 100%;
+    transition: background .12s, border-color .12s;
+  }
+  .opt:hover { background: #f2f7fd; }
+  .opt .num { color: #9aa8bc; font-size: 12px; margin-right: 8px; }
+  .opt.right { background: var(--ok-bg); border-color: #34a853; color: var(--ok-fg); font-weight: 600; }
+  .opt.wrong { background: var(--no-bg); border-color: #d93025; color: var(--no-fg); }
+  .opt:disabled { cursor: default; opacity: .95; }
+  .opt:disabled:hover { background: #fff; }
+  .opt.right:disabled, .opt.wrong:disabled { opacity: 1; }
+  .opt:empty { display: none; }
+  .answer { margin-top: 6px; text-align: left; }
+  .answer hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0 12px; }
+  .trans { font-size: 19px; font-weight: 600; color: #10263f; text-align: left; }
+  .label { font-size: 12px; color: #8a97a8; letter-spacing: 1px; margin: 12px 0 4px; text-align: left; }
+  .sent { font-size: 14.5px; color: #3d4b5c; font-style: italic; line-height: 1.55; text-align: left; }
+  .sent b { color: #d93025; font-style: normal; }
+  .meta { font-size: 12px; color: #93a1b3; margin-top: 10px; text-align: left; }
+  .primary {
+    margin-top: 16px; width: 100%; border: none; background: var(--brand); color: #fff;
+    font-size: 16px; padding: 12px; border-radius: 10px; cursor: pointer; font-family: inherit;
+  }
+  .primary:hover { background: #245d99; }
+  .grade-row { display: flex; gap: 12px; margin-top: 18px; }
+  .grade {
+    flex: 1; border: none; font-size: 16px; padding: 13px; border-radius: 10px;
+    cursor: pointer; font-family: inherit; font-weight: 600;
+  }
+  .grade.know { background: var(--ok-bg); color: var(--ok-fg); border: 1px solid #9fdcb4; }
+  .grade.know:hover { background: #c3eecf; }
+  .grade.dunno { background: var(--no-bg); color: var(--no-fg); border: 1px solid #f3b6b2; }
+  .grade.dunno:hover { background: #fbd2cf; }
+  .done-big { font-size: 22px; font-weight: 700; margin: 8px 0; }
+  .hidden { display: none !important; }
+  /* 复习引导页 */
+  .gate-num { font-size: 44px; font-weight: 700; color: var(--brand); margin: 10px 0 2px; }
+  /* 列表 */
+  #search {
+    width: 100%; padding: 10px 14px; font-size: 15px; font-family: inherit;
+    border: 1px solid var(--line); border-radius: 10px; margin-bottom: 12px; background: #fff;
+  }
+  .list-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; }
+  .list-table th, .list-table td { padding: 9px 10px; text-align: left; font-size: 14px; border-bottom: 1px solid #eef2f8; }
+  .list-table th { background: #eef3fa; color: #4a5a75; font-size: 12.5px; position: sticky; top: 0; }
+  .list-table tr:hover td { background: #f6f9fd; }
+  .lt-term { font-weight: 600; color: #10263f; }
+  .lt-cat { color: #93a1b3; font-size: 12px; white-space: nowrap; }
+  .lt-audio { cursor: pointer; border: none; background: none; font-size: 15px; }
+  footer { text-align: center; color: #a5b1c2; font-size: 12px; padding: 10px 0 26px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>论文生词</h1>
+    <button id="tab-learn" class="tab active">学习</button>
+    <button id="tab-review" class="tab">复习</button>
+    <button id="tab-list" class="tab">列表</button>
+    <div class="spacer"></div>
+    <button id="btn-wrongbook" class="ghost">错词本 <span id="wrong-count">0</span></button>
+  </div>
+  <div class="bar"><div id="progress"></div></div>
+  <div class="meta-line">
+    <span id="stat-progress">–</span>
+    <span id="stat-learned"></span>
+    <span id="stat-acc"></span>
+    <span id="stat-streak"></span>
+    <span id="stat-day"></span>
+  </div>
+  <div id="chips" class="chips"></div>
+</header>
+
+<!-- ============ 学习：先过一遍 ============ -->
+<main id="view-learn">
+  <div id="learn-card" class="card">
+    <div id="l-kind" class="kind"></div>
+    <div id="l-term" class="term"></div>
+    <div class="phon-line">
+      <span id="l-phon" class="phon"></span>
+      <button id="l-audio" class="audio" title="播放发音 (P)">🔊</button>
+    </div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:16px 0 12px">
+    <div id="l-trans" class="trans"></div>
+    <div class="label">例 句</div>
+    <div id="l-sent" class="sent"></div>
+    <div id="l-meta" class="meta"></div>
+    <div class="grade-row">
+      <button id="l-know" class="grade know">认识 ✓（1）</button>
+      <button id="l-dunno" class="grade dunno">不认识 ✗（2）</button>
+    </div>
+  </div>
+
+  <div id="learn-done" class="card hidden">
+    <div class="done-big">📖 学习过一遍完成</div>
+    <div id="learn-done-detail" class="meta" style="font-size:14px;text-align:center"></div>
+    <button id="btn-go-review" class="primary">去复习 →</button>
+    <button id="btn-relearn" class="ghost" style="margin-top:10px">再过一遍</button>
+  </div>
+</main>
+
+<!-- ============ 复习：四选一 ============ -->
+<main id="view-review" class="hidden">
+  <div id="review-gate" class="card hidden">
+    <div class="done-big">🎯 先过一遍学习，再来复习</div>
+    <div class="gate-num"><span id="gate-left">0</span></div>
+    <div class="meta" style="text-align:center">还有这么多词没学过</div>
+    <button id="btn-gate-learn" class="primary">去学习 →</button>
+    <button id="btn-gate-skip" class="ghost" style="margin-top:10px">跳过，直接复习</button>
+  </div>
+
+  <div id="review-card" class="card hidden">
+    <div id="kind" class="kind"></div>
+    <div id="term" class="term"></div>
+    <div class="phon-line">
+      <span id="phon" class="phon"></span>
+      <button id="btn-audio" class="audio" title="播放发音 (P)">🔊</button>
+    </div>
+    <div id="hint" class="hint">选择正确的中文释义 · 数字键 1-4 作答 · P 播放发音</div>
+    <div id="opts" class="opts"></div>
+    <div id="answer" class="answer hidden">
+      <hr>
+      <div id="trans" class="trans"></div>
+      <div class="label">例 句</div>
+      <div id="sent" class="sent"></div>
+      <div id="meta" class="meta"></div>
+      <button id="btn-next" class="primary">下一个（Enter）</button>
+    </div>
+  </div>
+
+  <div id="done" class="card hidden">
+    <div class="done-big">🎉 本组复习完成</div>
+    <div id="done-detail" class="meta" style="font-size:14px;text-align:center"></div>
+    <button id="btn-restart" class="primary">再来一轮</button>
+    <button id="btn-clear-wrong" class="ghost" style="margin-top:10px">清空错词本</button>
+  </div>
+</main>
+
+<!-- ============ 列表 ============ -->
+<main id="view-list" class="hidden">
+  <input id="search" placeholder="搜索单词或释义…">
+  <table class="list-table">
+    <thead><tr><th>词条</th><th>音标</th><th>释义</th><th>分类</th><th></th></tr></thead>
+    <tbody id="list-body"></tbody>
+  </table>
+</main>
+
+<footer>数据来自 data/glossary.db + data/domain_glossary.tsv · 改 TSV 后刷新即生效</footer>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const KIND_LABEL = { word: "单词", phrase: "短语", abbr: "缩写" };
+const CHIP_PREFIXES = ["", "缩写", "短语搭配", "领域术语", "计算机术语", "医学术语", "学术词汇", "进阶词汇"];
+
+let TERMS = [];
+let view = "learn";           // learn | review | list
+let catFilter = "", onlyWrong = false;
+
+/* 复习会话 */
+let queue = [], sessionTotal = 0, sessionDone = 0, sessionRight = 0, streak = 0;
+let cur = null, answered = false, wrongClicks = 0;
+/* 学习会话 */
+let learnQueue = [], learnCur = null, learnTotal = 0, learnDone = 0;
+
+/* ---------- 本地存储 ---------- */
+function loadJSON(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }
+let wrongSet = new Set(loadJSON("pvweb.wrong", []));
+let learnedSet = new Set(loadJSON("pvweb.learned", []));
+let srs = loadJSON("pvweb.srs", {});
+function saveWrong() { localStorage.setItem("pvweb.wrong", JSON.stringify([...wrongSet])); }
+function saveLearned() { localStorage.setItem("pvweb.learned", JSON.stringify([...learnedSet])); }
+function saveSrs() { localStorage.setItem("pvweb.srs", JSON.stringify(srs)); }
+function dayStats() {
+  const today = new Date().toISOString().slice(0, 10);
+  const s = loadJSON("pvweb.stats", { date: today, done: 0, right: 0 });
+  if (s.date !== today) { s.date = today; s.done = 0; s.right = 0; }
+  return s;
+}
+function saveDay(s) { localStorage.setItem("pvweb.stats", JSON.stringify(s)); }
+
+/* ---------- SRS 间隔重复（SM-2 简化版） ----------
+   每词：e=难易度(1.3~)  i=当前间隔(天)  r=连续答对次数  d=到期日
+   答对：1天 -> 6天 -> i*ease，逐次拉长；答错：间隔归零、难易度下调 */
+function todayStr(off = 0) {
+  const d = new Date();
+  d.setDate(d.getDate() + off);
+  return d.toISOString().slice(0, 10);
+}
+function srsGrade(key, ok) {
+  const e = srs[key] || { e: 2.5, i: 0, r: 0, d: todayStr() };
+  if (ok) {
+    e.r += 1;
+    e.i = e.r === 1 ? 1 : e.r === 2 ? 6 : Math.max(1, Math.round((e.i || 1) * e.e));
+    e.d = todayStr(e.i);
+  } else {
+    e.e = Math.max(1.3, e.e - 0.2);
+    e.i = 0; e.r = 0; e.d = todayStr();
+  }
+  srs[key] = e;
+  saveSrs();
+  return e;
+}
+function dueTerms(pool) {
+  const today = todayStr();
+  return pool.filter(t => { const s = srs[t.key]; return s && s.d <= today; })
+             .sort((a, b) => (srs[a.key].d < srs[b.key].d ? -1 : 1));
+}
+
+/* ---------- 工具 ---------- */
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function esc(s) { return (s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function shortTrans(t, limit = 30) {
+  let s = (t.translation || "").replace(/\s+/g, " ");
+  s = s.replace(/^[a-z]+\.\s*/i, "").replace(/\[[^\]]*\]/g, "");
+  s = s.replace(/（[^）]*）|\([^)]*\)/g, "").replace(/^[；;，,\s]+|[；;，,\s]+$/g, "");
+  if (s.length > limit) s = s.slice(0, limit).replace(/[；;，,\s]+$/, "") + "…";
+  return s || "（暂无释义）";
+}
+function fullTrans(t) {
+  let s = (t.translation || "").replace(/\s+/g, " ").trim();
+  return s.length > 90 ? s.slice(0, 90).replace(/[；;，,\s]+$/, "") + "…" : s;
+}
+function highlight(sent, term) {
+  if (!sent) return "";
+  const e = esc(sent);
+  const w = term.display.replace(/[.*+?^${}()|[\]\\-]/g, "\\$&");
+  return e.replace(new RegExp("\\b(" + w + ")\\w{0,3}\\b", "i"), "<b>$1</b>");
+}
+
+/* ---------- 音频 ---------- */
+const audioCache = {};
+async function playAudio(term) {
+  try {
+    let url = term.audio || audioCache[term.key];
+    if (!url) {
+      const r = await fetch("/api/synth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: term.key }) });
+      const j = await r.json();
+      url = j.audio || "";
+      if (url) { audioCache[term.key] = url; term.audio = url; }
+    }
+    if (url) new Audio(url).play();
+  } catch (e) { /* 无网或无发音：静默 */ }
+}
+
+/* ---------- 数据筛选 ---------- */
+function filteredTerms() {
+  return TERMS.filter(t => {
+    if (catFilter && !(t.category || "").startsWith(catFilter)) return false;
+    if (onlyWrong && !wrongSet.has(t.key)) return false;
+    return true;
+  });
+}
+function unlearnedCount() { return filteredTerms().filter(t => !learnedSet.has(t.key)).length; }
+
+/* ============ 学习：先过一遍 ============ */
+function startLearn() {
+  learnQueue = shuffle(filteredTerms().filter(t => !learnedSet.has(t.key)).slice());
+  learnTotal = learnQueue.length; learnDone = 0;
+  $("learn-done").classList.add("hidden");
+  $("learn-card").classList.remove("hidden");
+  learnNext();
+}
+function learnNext() {
+  learnCur = learnQueue.shift();
+  if (!learnCur) { showLearnDone(); return; }
+  $("l-kind").textContent = kindChip(learnCur);
+  $("l-term").textContent = learnCur.display;
+  $("l-phon").textContent = learnCur.phonetic || "";
+  $("l-trans").textContent = fullTrans(learnCur);
+  $("l-sent").innerHTML = highlight(learnCur.sentence, learnCur);
+  $("l-meta").textContent = [learnCur.category, "来源: " + (learnCur.source || "—")].filter(Boolean).join(" · ");
+  updateHeader();
+  playAudio(learnCur);
+}
+function gradeLearn(known) {
+  if (!learnCur || view !== "learn") return;
+  const t = learnCur;
+  if (known) { learnedSet.add(t.key); wrongSet.delete(t.key); }
+  else { learnedSet.delete(t.key); wrongSet.add(t.key); }
+  srsGrade(t.key, known);   // 学习打分直接播种 SRS：认识明天见，不认识今天留在复习队列
+  saveLearned(); saveWrong();
+  const d = dayStats(); d.done++; saveDay(d);
+  learnDone++;
+  learnNext();
+}
+function showLearnDone() {
+  $("learn-card").classList.add("hidden");
+  $("learn-done").classList.remove("hidden");
+  const wrongNew = [...wrongSet].length;
+  $("learn-done-detail").textContent =
+    `本轮过了 ${learnTotal} 个词 · 错词本现有 ${wrongNew} 个` +
+    (learnTotal === 0 ? "，都学过了" : "");
+  updateHeader(0);
+}
+
+/* ============ 复习：四选一 ============ */
+function startReview() {
+  const pool = filteredTerms();
+  if (onlyWrong) {
+    queue = shuffle(pool.slice());           // 错词本模式：只刷错词
+  } else {
+    const due = dueTerms(pool);              // 到期的先来（最久没见的排最前）
+    const fresh = shuffle(pool.filter(t => !srs[t.key]).slice());  // 没学过的新词补位
+    queue = due.concat(fresh);
+  }
+  sessionTotal = queue.length; sessionDone = 0; sessionRight = 0; streak = 0;
+  $("done").classList.add("hidden");
+  $("review-gate").classList.add("hidden");
+  $("review-card").classList.remove("hidden");
+  next();
+}
+function showGate() {
+  $("review-card").classList.add("hidden");
+  $("done").classList.add("hidden");
+  $("review-gate").classList.remove("hidden");
+  $("gate-left").textContent = unlearnedCount();
+  updateHeader(0);
+}
+function enterReview() {
+  if (unlearnedCount() > 0) showGate(); else startReview();
+}
+function kindChip(t) {
+  const k = KIND_LABEL[t.kind] || "单词";
+  return (t.category && t.category !== k) ? `${k} · ${t.category}` : (t.category || k);
+}
+function next() {
+  cur = queue.shift();
+  if (!cur) { showDone(); return; }
+  answered = false; wrongClicks = 0;
+  $("kind").textContent = kindChip(cur);
+  $("term").textContent = cur.display;
+  $("phon").textContent = cur.phonetic || "";
+  $("answer").classList.add("hidden");
+  $("hint").classList.remove("hidden");
+  renderOptions();
+  updateHeader();
+  playAudio(cur);
+}
+function renderOptions() {
+  const correct = shortTrans(cur);
+  const same = shuffle(TERMS.filter(t => t.key !== cur.key && t.kind === cur.kind && shortTrans(t) !== correct));
+  let ds = same.slice(0, 3);
+  if (ds.length < 3) {
+    const rest = shuffle(TERMS.filter(t => t.key !== cur.key && !ds.includes(t) && shortTrans(t) !== correct));
+    ds = ds.concat(rest.slice(0, 3 - ds.length));
+  }
+  const opts = ds.map(t => shortTrans(t));
+  const idx = Math.floor(Math.random() * (opts.length + 1));
+  opts.splice(idx, 0, correct);
+  $("opts").innerHTML = "";
+  opts.forEach((text, i) => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.innerHTML = `<span class="num">${i + 1}</span>` + esc(text);
+    b.onclick = () => answer(i, b, text === correct);
+    $("opts").appendChild(b);
+  });
+}
+function answer(i, btn, ok) {
+  if (answered || btn.disabled) return;
+  if (ok) {
+    btn.classList.add("right");
+    [...$("opts").children].forEach(b => b.disabled = true);
+    reveal(wrongClicks === 0);  // 中途点错过一次就按错词计
+  } else {
+    btn.classList.add("wrong");
+    btn.disabled = true;
+    wrongClicks++;
+  }
+}
+function reveal(right) {
+  answered = true; streak = right ? streak + 1 : 0;
+  const day = dayStats(); day.done++; if (right) day.right++; saveDay(day);
+  sessionDone++; if (right) sessionRight++;
+  if (right) wrongSet.delete(cur.key); else wrongSet.add(cur.key);
+  saveWrong();
+  const entry = srsGrade(cur.key, right);
+  const ivlText = right ? (entry.i === 1 ? "明天" : `${entry.i} 天后`) : "今天稍后";
+  if (!right) {  // 错词回插队列，隔 5 张再出现
+    const at = Math.min(5 + Math.floor(Math.random() * 3), queue.length);
+    queue.splice(at, 0, cur);
+    sessionTotal++;
+  }
+  $("hint").classList.add("hidden");
+  $("trans").textContent = fullTrans(cur);
+  $("sent").innerHTML = highlight(cur.sentence, cur);
+  $("meta").textContent = [cur.category, "来源: " + (cur.source || "—"), `📅 ${ivlText}复习`]
+    .filter(Boolean).join(" · ");
+  $("answer").classList.remove("hidden");
+  $("btn-next").focus();
+  updateHeader();
+}
+function showDone() {
+  $("review-card").classList.add("hidden");
+  $("done").classList.remove("hidden");
+  const tomorrow = TERMS.filter(t => srs[t.key] && srs[t.key].d === todayStr(1)).length;
+  const dueNow = dueTerms(TERMS).length;
+  if (sessionTotal === 0 && !onlyWrong) {
+    $("done-big").textContent = dueNow ? "📋 有到期的复习" : "🎉 今日复习已完成";
+    $("done-detail").textContent = dueNow
+      ? `还有 ${dueNow} 个词到期，点"再来一轮"继续`
+      : `SRS 已排好：明天有 ${tomorrow} 个词到期，过期的会自动进队列`;
+  } else {
+    $("done-big").textContent = "🎉 本组复习完成";
+    const acc = sessionTotal ? Math.round(sessionRight / sessionTotal * 100) : 100;
+    $("done-detail").textContent =
+      `本组 ${sessionTotal} 张 · 正确率 ${acc}% · 错词本 ${wrongSet.size} 个` +
+      (tomorrow ? ` · 明天到期 ${tomorrow} 个` : "");
+  }
+  updateHeader(0);
+}
+function updateHeader(total) {
+  const t = total === undefined ? sessionTotal : total;
+  const d = dayStats();
+  if (view === "learn") {
+    const lt = total === undefined ? learnTotal : total;
+    $("progress").style.width = (lt ? learnDone / lt * 100 : 100) + "%";
+    $("stat-progress").textContent = `${learnDone}/${lt}`;
+    $("stat-acc").textContent = "";
+    $("stat-streak").textContent = "";
+  } else {
+    $("progress").style.width = (t ? sessionDone / t * 100 : 100) + "%";
+    $("stat-progress").textContent = `${sessionDone}/${t}`;
+    $("stat-acc").textContent = sessionDone ? `本组正确率 ${Math.round(sessionRight / sessionDone * 100)}%` : "";
+    $("stat-streak").textContent = streak >= 3 ? `🔥 连对 ${streak}` : "";
+  }
+  $("stat-learned").textContent = `已学 ${learnedSet.size}/${TERMS.length}`;
+  $("stat-day").textContent = `今日 ${d.done} 题 ✓ ${d.right}`;
+  $("wrong-count").textContent = wrongSet.size;
+}
+
+/* ---------- 列表 ---------- */
+function renderList() {
+  const q = $("search").value.trim().toLowerCase();
+  const rows = filteredTerms().filter(t =>
+    !q || t.display.toLowerCase().includes(q) || (t.translation || "").toLowerCase().includes(q));
+  $("list-body").innerHTML = rows.map(t => `<tr>
+    <td class="lt-term">${esc(t.display)}</td>
+    <td>${esc(t.phonetic)}</td>
+    <td>${esc(fullTrans(t))}</td>
+    <td class="lt-cat">${esc(t.category)}</td>
+    <td><button class="lt-audio" data-key="${esc(t.key)}">🔊</button></td>
+  </tr>`).join("");
+}
+$("list-body").addEventListener("click", e => {
+  const b = e.target.closest(".lt-audio");
+  if (!b) return;
+  const t = TERMS.find(x => x.key === b.dataset.key);
+  if (t) playAudio(t);
+});
+$("search").addEventListener("input", renderList);
+
+/* ---------- 顶部交互 ---------- */
+function buildChips() {
+  const cats = [...new Set(TERMS.map(t => t.category || "未分类"))];
+  const chips = CHIP_PREFIXES.filter(p => !p || cats.some(c => c.startsWith(p)));
+  $("chips").innerHTML = "";
+  chips.forEach(p => {
+    const label = p || "全部";
+    const n = p ? TERMS.filter(t => (t.category || "").startsWith(p)).length : TERMS.length;
+    const b = document.createElement("button");
+    b.className = "chip" + (p === catFilter ? " active" : "");
+    b.textContent = `${label} ${n}`;
+    b.onclick = () => { catFilter = p; if (onlyWrong) toggleWrong(); buildChips(); switchView(view === "list" ? "list" : "learn"); startLearn(); renderList(); };
+    $("chips").appendChild(b);
+  });
+}
+function toggleWrong() {
+  onlyWrong = !onlyWrong;
+  $("btn-wrongbook").classList.toggle("on", onlyWrong);
+  $("btn-wrongbook").childNodes[0].textContent = onlyWrong ? "退出错词本 " : "错词本 ";
+}
+$("btn-wrongbook").onclick = () => {
+  toggleWrong();
+  if (!wrongSet.size && onlyWrong) { toggleWrong(); return; }
+  switchView("review");
+  startReview();
+};
+$("l-audio").onclick = () => learnCur && playAudio(learnCur);
+$("l-know").onclick = () => gradeLearn(true);
+$("l-dunno").onclick = () => gradeLearn(false);
+$("btn-go-review").onclick = () => { switchView("review"); startReview(); };
+$("btn-relearn").onclick = () => startLearn();
+$("btn-audio").onclick = () => cur && playAudio(cur);
+$("btn-next").onclick = next;
+$("btn-restart").onclick = startReview;
+$("btn-clear-wrong").onclick = () => {
+  if (!confirm("清空整个错词本？")) return;
+  wrongSet.clear(); saveWrong();
+  if (onlyWrong) toggleWrong();
+  updateHeader(); startReview();
+};
+$("btn-gate-learn").onclick = () => { switchView("learn"); startLearn(); };
+$("btn-gate-skip").onclick = startReview;
+
+function switchView(v) {
+  view = v;
+  $("tab-learn").classList.toggle("active", v === "learn");
+  $("tab-review").classList.toggle("active", v === "review");
+  $("tab-list").classList.toggle("active", v === "list");
+  $("view-learn").classList.toggle("hidden", v !== "learn");
+  $("view-review").classList.toggle("hidden", v !== "review");
+  $("view-list").classList.toggle("hidden", v !== "list");
+  if (v === "learn") startLearn();
+  else if (v === "review") enterReview();
+  else renderList();
+}
+$("tab-learn").onclick = () => switchView("learn");
+$("tab-review").onclick = () => switchView("review");
+$("tab-list").onclick = () => switchView("list");
+
+/* ---------- 键盘 ---------- */
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if (view === "learn") {
+    if (e.key === "1") gradeLearn(true);
+    else if (e.key === "2") gradeLearn(false);
+    else if (e.key.toLowerCase() === "p" && learnCur) playAudio(learnCur);
+  } else if (view === "review") {
+    if (!answered && ["1", "2", "3", "4"].includes(e.key)) {
+      const b = $("opts").children[+e.key - 1];
+      if (b) b.click();
+    } else if (answered && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault(); next();
+    } else if (e.key.toLowerCase() === "p" && cur) {
+      playAudio(cur);
+    }
+  }
+});
+
+/* ---------- 启动 ---------- */
+(async function init() {
+  // PWA：localhost/https 下注册离线服务；普通 http 局域网访问会失败，静默即可
+  try { navigator.serviceWorker && navigator.serviceWorker.register("/sw.js").catch(() => {}); } catch (e) {}
+  const r = await fetch("/api/terms");
+  const j = await r.json();
+  TERMS = j.terms || [];
+  buildChips();
+  renderList();
+  switchView("learn");   // 一开始先过一遍学习
+})();
+</script>
+</body>
+</html>
