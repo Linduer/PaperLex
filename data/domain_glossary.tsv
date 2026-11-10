@@ -95,3 +95,49 @@ overfitting	过拟合	ˌəʊvəˈfɪtɪŋ
 long-range	长程的；大范围的	ˌlɒŋ ˈreɪndʒ
 cytoarchitecture myelination	细胞构筑与髓鞘化（脑区解剖特征谱）	ˌsɪtəʊˌɑːkɪˈtektʃə ˌmaɪəˈleɪʃən
 interquartile range	四分位数间距	ˌɪntəˈkwɔːtaɪl reɪndʒ
+# ---- 科研向释义精修（对照领域标准译法）----
+anatomical	解剖学的；结构的
+computation	计算；计算过程
+correlation	相关（性）
+decomposition	分解
+deviation	偏差；偏离
+diffusion	弥散；扩散
+dynamic	动态的
+dynamical	动力学的
+empirical	实证的；经验的
+gradient	梯度（沿皮层的连续变化轴）
+hierarchical	分层的；层级式的
+hierarchy	层级；等级结构
+inhibition	抑制（对神经活动的压制）
+intrinsic	内在的；固有的
+matrix	矩阵
+metastability	亚稳态：在多个亚稳状态间游走的动态特性
+neuroscience	神经科学
+node	节点
+normalize	归一化；标准化
+null	零；无效的（null model 零模型）
+optimize	优化
+oscillation	振荡
+prevalence	患病率；流行程度
+quantify	量化；定量刻画
+realistic	逼真的；接近真实的
+regression	回归（统计建模）
+reservoir	储备池（reservoir computing）
+similarity	相似性
+simulate	模拟；仿真
+systematic	系统性的
+temporal	时间的；颞叶的
+topology	拓扑（连接模式）
+variability	变异性
+emission	发射（PET 正电子发射）
+anatomical connectivity	解剖连接：白质纤维的物理连接
+better able	更能（胜任）的
+biological annotations	生物学注释（基因功能标注）
+biological prior	生物学先验（贝叶斯约束）
+diffusion tractography	弥散纤维束追踪
+generative models	生成模型
+link regions	连接（脑）区
+macaque mean	猕猴（数据）均值
+negative generative	负向生成连接
+spontaneous activity	自发活动（无任务时的脑活动）
+fMRI	功能磁共振成像（functional MRI）
