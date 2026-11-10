@@ -38,15 +38,34 @@ def _first_sense(text: str) -> str:
     return text.strip(" 。.")
 
 
+def _component_sense(text: str) -> str:
+    """领域词典释义取第一小节，作短语成分的简洁义项。"""
+    text = re.split(r"[：;；，,（(]", text)[0].strip()
+    return text
+
+
 def _phrase_gloss(key: str) -> str:
     """短语查不到词典时，用成分词义拼一个可读的中文提示。
 
+    成分先查领域词典（科研向精修），再回落 ECDICT；
     某个成分查不到释义（多半是领域新词）就保留英文原词，避免出现半截释义。
     """
     parts = []
     for word in key.split():
+        hit = manual.get(word)
+        if hit:
+            sense = _component_sense(hit["translation"])
+            if sense:
+                parts.append(sense)
+                continue
         info = lookup(word) or lookup(lemmatize(word))
         sense = _first_sense(info["translation"]) if info else ""
+        if not sense or "复数" in sense:  # ECDICT 屈折形式首义常是"( xxx的复数形式 )"，回落原形
+            lem = lemmatize(word)
+            if lem != word:
+                info2 = lookup(lem)
+                if info2:
+                    sense = _first_sense(info2["translation"]) or sense
         parts.append(sense or word)
     return " · ".join(parts)
 

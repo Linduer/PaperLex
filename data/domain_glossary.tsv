@@ -141,3 +141,10 @@ macaque mean	猕猴（数据）均值
 negative generative	负向生成连接
 spontaneous activity	自发活动（无任务时的脑活动）
 fMRI	功能磁共振成像（functional MRI）
+time series	时间序列
+connectivity matrix	连接矩阵
+memory capacity	记忆容量（模型能存多少过去信息）
+network topology	网络拓扑（连接模式）
+standard deviation	标准差（SD）
+gene expression	基因表达
+input signal	输入信号
